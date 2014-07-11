@@ -14,23 +14,24 @@ var devs = [
 ];
 
 var themes = [
-  { name: "default", filename: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" },
-  { name: "amelia", filename: "//bootswatch.com/amelia/bootstrap.min.css" },
-  { name: "cerulean", filename: "//bootswatch.com/cerulean/bootstrap.min.css" },
-  { name: "cosmo", filename: "//bootswatch.com/cosmo/bootstrap.min.css" },
-  { name: "cyborg", filename: "//bootswatch.com/cyborg/bootstrap.min.css" },
-  { name: "flatly", filename: "//bootswatch.com/flatly/bootstrap.min.css" },
-  { name: "journal", filename: "//bootswatch.com/journal/bootstrap.min.css" },
-  { name: "readable", filename: "//bootswatch.com/readable/bootstrap.min.css" },
-  { name: "simplex", filename: "//bootswatch.com/simplex/bootstrap.min.css" },
-  { name: "slate", filename: "//bootswatch.com/slate/bootstrap.min.css" },
-  { name: "spacelab", filename: "//bootswatch.com/spacelab/bootstrap.min.css" },
-  { name: "superhero", filename: "//bootswatch.com/superhero/bootstrap.min.css" },
-  { name: "united", filename: "//bootswatch.com/united/bootstrap.min.css" }
+  { name: "default", stylesheet: "default.css" },
+  { name: "amelia", stylesheet: "amelia.css" },
+  { name: "cerulean", stylesheet: "cerulean.css" },
+  { name: "cosmo", stylesheet: "cosmo.css" },
+  { name: "cyborg", stylesheet: "cyborg.css" },
+  { name: "darkly", stylesheet: "darkly.css" },
+  { name: "flatly", stylesheet: "flatly.css" },
+  { name: "journal", stylesheet: "journal.css" },
+  { name: "readable", stylesheet: "readable.css" },
+  { name: "simplex", stylesheet: "simplex.css" },
+  { name: "slate", stylesheet: "slate.css" },
+  { name: "spacelab", stylesheet: "spacelab.css" },
+  { name: "superhero", stylesheet: "superhero.css" },
+  { name: "united", stylesheet: "united.css" },
+  { name: "yeti", stylesheet: "yeti.css" }
 ];
 
 Github.Router.map(function () {
-  this.resource('navbar');
   this.resource('user', { path: 'users/:login' }, function () {
     this.resource('repositories');
     this.resource('repository', { path: 'repositories/:reponame' }, function () {
@@ -47,8 +48,13 @@ Ember.Handlebars.registerBoundHelper('fromDate', function (theDate) {
   return target.from(today);
 });
 
-Github.NavbarRoute = Ember.Route.extend({
-  model: function(){ return themes; }
+Github.ApplicationRoute = Ember.Route.extend({
+  model: function(){ return themes; },
+  actions: {
+    setTheme: function (theme) {
+      $('head link#bootstrap-theme').attr('href', 'css/vendor/themes/' + theme);
+    }
+  }
 });
 
 Github.IndexRoute = Ember.Route.extend({

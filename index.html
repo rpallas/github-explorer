@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Github Explorer</title>
   <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/vendor/bootstrap.css">
+  <link id="bootstrap-theme" rel="stylesheet" href="css/vendor/themes/default.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,14 +12,7 @@
 <div class="container-fluid" id="github-app"></div>
 
 <script type="text/x-handlebars" data-template-name="application">
-  <div class="row">
-    <div class="col-md-12">
-      {{outlet}}
-    </div>
-  </div>
-</script>
 
-<script type="text/x-handlebars" data-template-name="navbar">
   <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
@@ -29,24 +22,33 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
-          </button>
+        </button>
         <a class="navbar-brand" href="#">Github Explorer</a>
-        </div>
+      </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown">Themes <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
+            <ul class="dropdown-menu" role="menu">
+              {{#each}}
+                <li><a {{action 'setTheme' stylesheet}}>{{name}}</a></li>
+              {{/each}}
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
 
-              </ul>
-            </li>
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </nav>
+  <div class="row">
+    <div class="col-md-12">
+      {{outlet}}
+    </div>
+    </div>
 </script>
+
 
 <script type="text/x-handlebars" data-template-name="index">
   <h2>Users</h2>
