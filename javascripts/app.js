@@ -1,6 +1,6 @@
 window.Github = Ember.Application.create({
-  rootElement: '#github-app',
-//  LOG_TRANSITIONS: true
+//  LOG_TRANSITIONS: true,
+  rootElement: '#github-app'
 });
 
 var devs = [
