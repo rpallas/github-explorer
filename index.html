@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Github Explorer</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/vendor/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container-fluid" id="github-app"></div>
+
+<script type="text/x-handlebars" data-template-name="application">
+  <div class="row">
+    <div class="col-md-12">
+      {{outlet}}
+    </div>
+  </div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="navbar">
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="#">Github Explorer</a>
+        </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Themes <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+
+              </ul>
+            </li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+</script>
+
+<script type="text/x-handlebars" data-template-name="index">
+  <h2>Users</h2>
+  <hr>
+  <ul>
+    {{#each}}
+      <li>{{#link-to 'user' this.login}}{{name}}{{/link-to}}</li>
+    {{/each}}
+  </ul>
+</script>
+
+<script type="text/x-handlebars" data-template-name="user">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="well">
+        <p class="text-center">
+          {{#link-to 'user' this}}<img {{bind-attr src=avatar_url}} style="width:140px"/>{{/link-to}}
+        </p>
+        <h4>{{#link-to 'user' this}}{{name}}{{/link-to}}</h4>
+        <p>
+          {{company}}<br>
+          {{location}}<br>
+          {{email}}<br>
+        </p>
+        <hr>
+        <table class="table table-striped">
+          <tr><td>Followers: </td><td>{{followers}}</td></tr>
+          <tr><td>Repositories: </td><td>{{public_repos}}</td></tr>
+          <tr><td>Gists: </td><td>{{public_gists}}</td></tr>
+        </table>
+        <p>
+          {{#link-to 'index'}}Back{{/link-to}}
+        </p>
+      </div>
+    </div>
+    <div class="col-md-8">
+      {{outlet}}
+    </div>
+  </div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="user/index">
+  <h2>{{name}}'s Github</h2>
+  <hr>
+  <ul>
+    <li>{{#link-to 'repositories' this}}Repositories{{/link-to}}</li>
+    <li>News and Events</li>
+    <li>Gists</li>
+  </ul>
+</script>
+
+<script type="text/x-handlebars" data-template-name="repositories">
+  <ol class="breadcrumb">
+    <li>{{#link-to 'index'}}Home{{/link-to}}</li>
+    <li>{{#link-to 'user' user}}{{user.name}}{{/link-to}}</li>
+    <li class="active">Repositories</li>
+  </ol>
+  <table class="table table-striped">
+    <tbody>
+      {{#each}}
+        <tr>
+          <td><h5>{{#link-to 'repository' this.name}}{{name}}{{/link-to}}</h5></td>
+          <td>{{description}}</td>
+        </tr>
+      {{/each}}
+  </table>
+</script>
+
+<script type="text/x-handlebars" data-template-name="repository">
+  <ol class="breadcrumb">
+    <li>{{#link-to 'index'}}Home{{/link-to}}</li>
+    <li>{{#link-to 'user' user}}{{user.name}}{{/link-to}}</li>
+    <li>{{#link-to 'repositories'}}Repositories{{/link-to}}</li>
+    <li class="active">{{name}}</li>
+  </ol>
+  <h1>{{name}} Repo</h1>
+  <p>{{description}}</p>
+  <ul>
+    <li>Language : {{language}}</li>
+    <li>Watchers : {{watchers}}</li>
+    <li>Open Issues : {{watchers}}</li>
+    <li>Clone : {{clone_url}}</li>
+    <li>Web : <a target="_blank" {{bind-attr href=html_url}}>{{html_url}}</a></li>
+  </ul>
+  <hr/>
+  {{#unless forked}}
+    <ul class="list-inline">
+      <li>{{#link-to 'commits'}}Commits{{/link-to}}</li>
+      <li>{{#link-to 'issues'}}Issues{{/link-to}}</li>
+      <li>{{#link-to 'forks'}}Forks{{/link-to}}</li>
+    </ul>
+  {{else}}
+    <p class="text-muted">
+      Forked {{fromDate created_at}} from <a target="_blank" {{bind-attr href=parent.html_url}}>{{parent.html_url}}</a>
+    </p>
+  {{/unless}}
+  {{outlet}}
+</script>
+
+<script type="text/x-handlebars" data-template-name="commits">
+  <h1>Commits</h1>
+  <table class="table table-striped">
+    <tbody>
+      {{#each}}
+      <tr>
+        <td><img {{bind-attr src=author.avatar_url}} style="width:80px" /></td>
+        <td>
+          <h5>
+            Author: <a {{bind-attr href=author.html_url}}>{{author.login}}</a>
+          </h5>
+          <h5>
+            Sha: <a {{bind-attr href=html_url}}>{{sha}}</a>
+          </h5>
+          <p>{{commit.message}}</p>
+          <hr/>
+          <p class="text-muted">{{fromDate commit.author.date}}</p>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td><p class="text-muted">No commits yet</p></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+
+<script type="text/x-handlebars" data-template-name="issues">
+  <h1>Issues</h1>
+  <table class="table table-striped">
+    <tbody>
+      {{#each}}
+        <tr>
+          <td><img {{bind-attr src=user.avatar_url}} style="width:80px" /></td>
+          <td>
+            {{title}}
+            <hr/>
+            <p class="text-muted">{{fromDate created_at}}</p>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td><p class="text-muted">No issues yet</p></td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+
+<script type="text/x-handlebars" data-template-name="forks">
+  <h1>Forks</h1>
+  <table class="table table-striped">
+    <tbody>
+      {{#each}}
+        <tr>
+          <td><img {{bind-attr src=owner.avatar_url}} style="width:80px" /></td>
+          <td>
+            {{full_name}}
+            <hr/>
+            <p class="text-muted">{{fromDate created_at}}</p>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td><p class="text-muted">No forks yet</p></td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+
+<script src="javascripts/vendor/jquery-1.10.2.js"></script>
+<script src="javascripts/vendor/handlebars-1.1.2.js"></script>
+<script src="javascripts/vendor/ember-1.5.1.js"></script>
+<script src="javascripts/vendor/bootstrap.js"></script>
+<script src="javascripts/vendor/moment.js"></script>
+<script src="javascripts/app.js"></script>
+<!-- to activate the test runner, add the "?test" query string parameter -->
+<script src="tests/runner.js"></script>
+</body>
+</html>
