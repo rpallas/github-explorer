@@ -1,7 +1,13 @@
 window.Github = Ember.Application.create({
-//  LOG_TRANSITIONS: true,
+  LOG_TRANSITIONS: true,
   rootElement: '#github-app'
 });
+
+var apiUrl = 'https://api.github.com/';
+
+/**
+ * Data
+ */
 
 var devs = [
   { login: 'rpallas', name: 'Robbie Pallas' },
@@ -31,6 +37,10 @@ var themes = [
   { name: "yeti", stylesheet: "yeti.css" }
 ];
 
+/**
+ * Routes
+ */
+
 Github.Router.map(function () {
   this.resource('user', { path: 'users/:login' }, function () {
     this.resource('repositories');
@@ -38,14 +48,9 @@ Github.Router.map(function () {
       this.resource('commits');
       this.resource('issues');
       this.resource('forks');
+      this.route('newissue');
     });
   });
-});
-
-Ember.Handlebars.registerBoundHelper('fromDate', function (theDate) {
-  var today = moment();
-  var target = moment(theDate);
-  return target.from(today);
 });
 
 Github.ApplicationRoute = Ember.Route.extend({
@@ -63,7 +68,7 @@ Github.IndexRoute = Ember.Route.extend({
 
 Github.UserRoute = Ember.Route.extend({
   model: function (params) {
-    return Ember.$.getJSON('https://api.github.com/users/' + params.login);
+    return Ember.$.getJSON(apiUrl + 'users/' + params.login);
   }
 });
 
@@ -83,8 +88,7 @@ Github.RepositoriesRoute = Ember.Route.extend({
 Github.RepositoryRoute = Ember.Route.extend({
   model: function (params) {
     var user = this.modelFor('user');
-    // Build the url for the Repo call manually
-    var url = 'https://api.github.com/repos/' + user.login + '/' + params.reponame;
+    var url = apiUrl + 'repos/' + user.login + '/' + params.reponame;
     return Ember.$.getJSON(url);
   }
 });
@@ -112,6 +116,10 @@ Github.ForksRoute = Ember.Route.extend({
   }
 });
 
+/**
+ * Controllers
+ */
+
 Github.RepositoriesController = Ember.ArrayController.extend({
   needs: ['user'],
   user: Ember.computed.alias('controllers.user')
@@ -121,4 +129,37 @@ Github.RepositoryController = Ember.ObjectController.extend({
   needs: ['user'],
   user: Ember.computed.alias('controllers.user'),
   forked: Ember.computed.alias('fork')
+});
+
+Github.RepositoryNewissueController = Ember.Controller.extend({
+  needs: ['repository'],
+  repo: Ember.computed.alias("controllers.repository"),
+  actions: {
+    submitIssue: function () {
+      var title = $('#new-issue-title').val();
+      var body = $('#new-issue-body').val();
+      var url = this.get('repo').get('issues_url').replace('{/number}', '');
+      Ember.$.ajax({
+        url: url,
+        type:'POST',
+        contentType: 'application/vnd.github.v3+json',
+        data: { title: title, body: body }
+      }).done(function (result) {
+        this.transitionToRoute('issues');
+        console.log('Submitted ' + title + ' to ' + url);
+      }).fail(function (jqXHR, textStatus, message) {
+        Ember.Logger.error('Create issue failed:', textStatus, message);
+      });
+    }
+  }
+});
+
+/**
+ * Helpers
+ */
+
+Ember.Handlebars.registerBoundHelper('fromDate', function (theDate) {
+  var today = moment();
+  var target = moment(theDate);
+  return target.from(today);
 });
