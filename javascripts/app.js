@@ -131,22 +131,32 @@ Github.RepositoryController = Ember.ObjectController.extend({
   forked: Ember.computed.alias('fork')
 });
 
+Github.Issue = Ember.Object.extend({
+  title: '',
+  body: ''
+});
+
 Github.RepositoryNewissueController = Ember.Controller.extend({
   needs: ['repository'],
   repo: Ember.computed.alias("controllers.repository"),
+  issue: function () {
+    return Github.Issue.create();
+  }.property('repo.model'),
   actions: {
     submitIssue: function () {
-      var title = $('#new-issue-title').val();
-      var body = $('#new-issue-body').val();
+      var data = this.getProperties('title', 'body');
+      var issue = this.get('issue');
       var url = this.get('repo').get('issues_url').replace('{/number}', '');
+      Ember.Logger.info('Submitting ' + data.title + ' to ' + url);
       Ember.$.ajax({
         url: url,
-        type:'POST',
+        type: 'POST',
         contentType: 'application/vnd.github.v3+json',
-        data: { title: title, body: body }
-      }).done(function (result) {
+        data: data
+      }).done(function () {
+        this.set('issue', Github.Issue.create());
         this.transitionToRoute('issues');
-        console.log('Submitted ' + title + ' to ' + url);
+        console.log('Submitted ' + data.title + ' to ' + url);
       }).fail(function (jqXHR, textStatus, message) {
         Ember.Logger.error('Create issue failed:', textStatus, message);
       });

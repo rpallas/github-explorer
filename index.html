@@ -226,13 +226,13 @@
   <div class="form-group">
     <label for="title">Title</label>
     <br/>
-    <input type="text" class="form-control" name="title" id="new-issue-title" placeholder="Issue Title" />
+    {{input value=issue.title class="form-control" placeholder="Title of Issue"}}
   </div>
   <div class="form-group">
     <label for="body">Body</label>
-    <textarea class="form-control" name="body" id="new-issue-body" cols="30" placeholder="What's your issue?" rows="10"></textarea>
+    {{textarea value=issue.body class="form-control" placeholder="What's your issue?" rows=7}}
     <br/>
-    <button class="btn btn-primary" {{action 'submitIssue'}} >Submit Issue></button>
+    <button class="btn btn-primary" {{action 'submitIssue'}} >Submit Issue</button>
   </div>
 </script>
 
